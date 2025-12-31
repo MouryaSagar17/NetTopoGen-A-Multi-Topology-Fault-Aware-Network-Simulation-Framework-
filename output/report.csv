@@ -1,0 +1,7 @@
+Node,Layer,Type,Degree,Protocols
+HostA,access,switch,0,
+Router1,core,router,2,OSPF
+Router2,core,router,2,OSPF
+Router3,core,router,2,OSPF
+Switch1,access,switch,0,
+Switch2,access,switch,0,

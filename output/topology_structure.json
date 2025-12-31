@@ -1,0 +1,98 @@
+{
+    "timestamp": 1767179794.5305965,
+    "topology_type": "Hierarchical",
+    "devices": [
+        {
+            "name": "R0",
+            "type": "router",
+            "x": 270,
+            "y": 50
+        },
+        {
+            "name": "R1",
+            "type": "router",
+            "x": 528,
+            "y": 50
+        },
+        {
+            "name": "Switch0",
+            "type": "switch",
+            "x": 270,
+            "y": 250
+        },
+        {
+            "name": "Switch1",
+            "type": "switch",
+            "x": 528,
+            "y": 250
+        },
+        {
+            "name": "PC0",
+            "type": "host",
+            "x": 166,
+            "y": 550
+        },
+        {
+            "name": "PC1",
+            "type": "host",
+            "x": 322,
+            "y": 550
+        },
+        {
+            "name": "PC2",
+            "type": "host",
+            "x": 477,
+            "y": 550
+        },
+        {
+            "name": "PC3",
+            "type": "host",
+            "x": 633,
+            "y": 550
+        }
+    ],
+    "connections": [
+        {
+            "source": "R0",
+            "destination": "R1",
+            "bandwidth": 100000000.0,
+            "delay": 34.42207728857797
+        },
+        {
+            "source": "R0",
+            "destination": "Switch0",
+            "bandwidth": 10000000.0,
+            "delay": 21.30707969804746
+        },
+        {
+            "source": "R1",
+            "destination": "Switch1",
+            "bandwidth": 1000000000.0,
+            "delay": 34.43836555228489
+        },
+        {
+            "source": "Switch0",
+            "destination": "PC0",
+            "bandwidth": 100000000.0,
+            "delay": 40.332559519786656
+        },
+        {
+            "source": "Switch0",
+            "destination": "PC2",
+            "bandwidth": 100000000.0,
+            "delay": 22.03532568534316
+        },
+        {
+            "source": "Switch1",
+            "destination": "PC1",
+            "bandwidth": 100000000.0,
+            "delay": 43.42794075846845
+        },
+        {
+            "source": "Switch1",
+            "destination": "PC3",
+            "bandwidth": 100000000.0,
+            "delay": 48.99365688814883
+        }
+    ]
+}
