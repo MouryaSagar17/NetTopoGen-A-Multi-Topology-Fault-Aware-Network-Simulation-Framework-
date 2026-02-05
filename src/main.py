@@ -16,6 +16,7 @@ import copy
 import re
 import zipfile
 import ipaddress
+import datetime
 
 # Add the parent directory to the Python path to import src modules
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -31,6 +32,9 @@ from src.visualization import NetworkVisualizer, MetricsVisualizer, SimulationDa
 from src.protocols import RIPRouter, OSPFRouter, RIPNetwork, OSPFNetwork
 from src.traffic_model import CBRGenerator, BurstyGenerator
 from src.config import QOS_WEIGHTS
+
+# Import modern UI colors and styles
+from src.modern_ui import COLORS
 
 class ToolTip:
     """
@@ -113,16 +117,32 @@ class NetworkSimulator:
         self.root.title("NetTopoGen - Advanced Network Simulator")
         self.root.geometry("1400x900")
         
-        # --- Styles ---
+        # --- Dark Theme Styles ---
+        self.root.configure(bg=COLORS["bg_dark"])
         style = ttk.Style()
         style.theme_use('clam')
-        style.configure("TFrame", background="#f5f5f5")
-        style.configure("TLabel", background="#f5f5f5", font=("Segoe UI", 9))
-        style.configure("TButton", font=("Segoe UI", 9))
-        style.configure("Header.TLabel", font=("Segoe UI", 10, "bold"))
-        style.configure("Result.TLabel", font=("Segoe UI", 10, "bold"), foreground="#006400")
-        style.configure("Simulation.Toolbutton", background="#ffcc80", font=("Segoe UI", 9, "bold"))
-        style.map("Simulation.Toolbutton", background=[('active', '#ffb74d'), ('selected', '#ffcc80')])
+
+        # Base Styles
+        style.configure("TFrame", background=COLORS["panel_bg"])
+        style.configure("TLabel", background=COLORS["panel_bg"], foreground=COLORS["text_main"], font=("Segoe UI", 9))
+        style.configure("TButton", background=COLORS["panel_bg"], foreground=COLORS["text_main"], font=("Segoe UI", 9))
+        style.configure("Header.TLabel", font=("Segoe UI", 10, "bold"), foreground=COLORS["text_main"])
+        style.configure("Result.TLabel", font=("Segoe UI", 10, "bold"), foreground=COLORS["success"])
+
+        # Custom Button Styles
+        style.configure("Simulation.Toolbutton", background=COLORS["accent"], foreground="white", font=("Segoe UI", 9, "bold"))
+        style.map("Simulation.Toolbutton", background=[('active', COLORS["accent"]), ('selected', COLORS["accent"])])
+
+        # Theme for visualizer
+        self.theme = {
+            "bg": COLORS["bg_dark"],
+            "text": COLORS["text_main"],
+            "link_inactive": COLORS["text_dim"],
+            "link_text": COLORS["text_main"],
+            "queue_bg": COLORS["panel_bg"],
+            "queue_outline": COLORS["text_dim"],
+            "glow": COLORS["accent"]
+        }
 
         # --- Main Layout Container ---
         self.main_container = ttk.Frame(root)

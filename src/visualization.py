@@ -23,7 +23,7 @@ class NetworkVisualizer:
     Visualizes network topology and traffic.
     """
 
-    def __init__(self, topology, canvas=None, tag_prefix="node"):
+    def __init__(self, topology, canvas=None, tag_prefix="node", theme=None):
         """
         Initialize network visualizer.
 
@@ -31,10 +31,20 @@ class NetworkVisualizer:
             topology: Network topology object
             canvas: Tkinter canvas for drawing (optional)
             tag_prefix: Prefix for device tags ("node" or "device")
+            theme: Optional dictionary for color theme
         """
         self.topology = topology
         self.canvas = canvas
         self.tag_prefix = tag_prefix
+        self.theme = theme if theme else {
+            "bg": "white",
+            "text": "black",
+            "link_inactive": "gray80",
+            "link_text": "blue",
+            "queue_bg": "white",
+            "queue_outline": "black",
+            "glow": "#90EE90"
+        }
         self.node_positions = {}
         self.node_colors = {}
         self.link_colors = {}
@@ -104,7 +114,7 @@ class NetworkVisualizer:
             y = center_y + radius * math.sin(angle)
             self.node_positions[node_id] = (x, y)
 
-    def draw_topology(self, highlight_paths=None, failed_links=None, link_costs=None, optimal_path=None, optimal_color="green", node_queues=None, link_utilization=None, highlight_nodes=None):
+    def draw_topology(self, highlight_paths=None, failed_links=None, link_costs=None, optimal_path=None, optimal_color="green", node_queues=None, link_utilization=None, highlight_nodes=None, show_link_labels=True):
         """
         Draw the network topology.
 
@@ -117,6 +127,7 @@ class NetworkVisualizer:
             node_queues: Dictionary of node queue levels (0.0 to 1.0)
             link_utilization: Dictionary of link utilization (0.0 to 1.0)
             highlight_nodes: Set of node IDs to highlight
+            show_link_labels: Whether to draw static link labels
         """
         if not self.canvas:
             return
@@ -152,7 +163,7 @@ class NetworkVisualizer:
 
             # Determine link color and style
             link_tag = f"link_{'_'.join(sorted(link_key))}"
-            color = "gray80" # Default non-optimal (Thin gray)
+            color = self.theme["link_inactive"] # Default non-optimal
             width = 1
             dash = None
 
@@ -189,7 +200,7 @@ class NetworkVisualizer:
                 if is_optimal:
                     # Glow effect (thick transparent-like line behind)
                     self.canvas.create_line(pos_a[0], pos_a[1], pos_b[0], pos_b[1],
-                                          fill="#90EE90", width=8, tags=(link_tag, "glow"))
+                                          fill=self.theme["glow"], width=8, tags=(link_tag, "glow"))
                     color = optimal_color
                     width = 4
                 elif is_inferred:
@@ -205,21 +216,22 @@ class NetworkVisualizer:
                                               fill=color, width=width, dash=dash, tags=(link_tag,))
             self.link_items[link_key] = line_item
 
-            # Draw link metrics at midpoint
-            mid_x = (pos_a[0] + pos_b[0]) / 2
-            mid_y = (pos_a[1] + pos_b[1]) / 2
-            
-            cost_str = ""
-            if link_costs and link_key in link_costs:
-                cost_str = f"\nCost: {link_costs[link_key]:.1f}"
-            
-            bw_str = f"{bandwidth:.0f}M" if bandwidth < 1000 else f"{bandwidth/1000:.1f}G"
-            metrics_text = f"D:{delay:.0f}ms B:{bw_str} L:{loss:.1f}%{cost_str}"
-            
-            label_tag = f"link_label_{'_'.join(sorted(link_key))}"
-            label_item = self.canvas.create_text(mid_x, mid_y, text=metrics_text,
-                                               font=("Arial", 7), fill="blue", justify="center", tags=(label_tag,))
-            self.link_label_items[link_key] = label_item
+            if show_link_labels:
+                # Draw link metrics at midpoint
+                mid_x = (pos_a[0] + pos_b[0]) / 2
+                mid_y = (pos_a[1] + pos_b[1]) / 2
+                
+                cost_str = ""
+                if link_costs and link_key in link_costs:
+                    cost_str = f"\nCost: {link_costs[link_key]:.1f}"
+                
+                bw_str = f"{bandwidth:.0f}M" if bandwidth < 1000 else f"{bandwidth/1000:.1f}G"
+                metrics_text = f"D:{delay:.0f}ms B:{bw_str} L:{loss:.1f}%{cost_str}"
+                
+                label_tag = f"link_label_{'_'.join(sorted(link_key))}"
+                label_item = self.canvas.create_text(mid_x, mid_y, text=metrics_text,
+                                                   font=("Arial", 7), fill=self.theme["link_text"], justify="center", tags=(label_tag,))
+                self.link_label_items[link_key] = label_item
 
             drawn_links.add(link_key)
 
@@ -242,7 +254,7 @@ class NetworkVisualizer:
                 bar_w = 6
                 
                 # Background
-                self.canvas.create_rectangle(bar_x, bar_y, bar_x + bar_w, bar_y + bar_h, fill="white", outline="black")
+                self.canvas.create_rectangle(bar_x, bar_y, bar_x + bar_w, bar_y + bar_h, fill=self.theme["queue_bg"], outline=self.theme["queue_outline"])
                 # Fill
                 fill_h = bar_h * min(max(q_level, 0), 1)
                 fill_color = "green" if q_level < 0.5 else "orange" if q_level < 0.8 else "red"
@@ -250,8 +262,8 @@ class NetworkVisualizer:
 
             # Node label near the icon
             device_tag = f"device_{node_id}"
-            self.canvas.create_text(pos[0], pos[1] + 35, text=node_id,
-                                  font=("Arial", 9, "bold"), tags=("device", device_tag, node_id))
+            self.canvas.create_text(pos[0], pos[1] + 35, text=node_id, fill=self.theme["text"],
+                                  font=("Arial", 9, "bold"), tags=("device", device_tag, node.node_id))
 
     def _draw_device_icon(self, node, pos, highlight=False):
         """
