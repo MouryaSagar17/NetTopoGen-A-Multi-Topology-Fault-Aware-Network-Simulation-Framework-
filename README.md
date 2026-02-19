@@ -323,10 +323,57 @@ stateDiagram-v2
     end note
 ```
 
+### Data Flow Diagrams
+
+#### Level 1 - System Flow
+
+```mermaid
+graph TD
+    %% Entities
+    User[User]
+
+    %% Processes
+    subgraph Processes
+        UI[User Interface]
+        TM[Topology Manager]
+        RL[Routing Logic]
+        FM[Fault Manager]
+        Vis[Visualization]
+    end
+
+    %% Data Stores
+    subgraph Data_Stores
+        TC[(Topology Configuration)]
+        RMS[(Runtime Memory State)]
+    end
+
+    %% Flows
+    User --> UI
+    UI --> TM
+    TM --> RL
+    RL --> Vis
+    
+    %% Interactions
+    TM <--> TC
+    RL <--> RMS
+    FM --> TM
+```
+
+#### Level 2 - Internal Operations
+
+```mermaid
+graph LR
+    IP[Intent Parsing] -->|structured request| TM[Topology Manager]
+    RC[Routing Computation] -->|path generation| RL[Routing Logic]
+    Vis[Visualization] -->|UI update| UI[User Interface]
+    FI[Fault Injection] -->|topology modification| TM
+```
+
 ## Installation
 
 ### Prerequisites
 - Python 3.7 or higher
+- Node.js and npm (for React frontend)
 - Required packages: `tkinter`, `matplotlib`, `networkx`, `numpy`
 
 ### Installation Steps
