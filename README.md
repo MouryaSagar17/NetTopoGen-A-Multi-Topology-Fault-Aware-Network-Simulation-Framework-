@@ -81,6 +81,108 @@ graph TD
     H --> Z[JSON Configs]
 ```
 
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+
+    DEVICE_TYPE ||--o{ DEVICE : defines
+    DEVICE ||--o{ INTERFACE : contains
+    DEVICE ||--o{ LINK : connects
+    LINK }o--|| DEVICE : connects_to
+
+    TOPOLOGY ||--o{ DEVICE : includes
+    TOPOLOGY ||--o{ LINK : includes
+
+    LINK ||--|| METRIC : has
+    SIMULATION ||--|| TOPOLOGY : runs_on
+    SIMULATION ||--o{ TRAFFIC_FLOW : generates
+    TRAFFIC_FLOW }o--|| DEVICE : source
+    TRAFFIC_FLOW }o--|| DEVICE : destination
+
+    ROUTING_RESULT }o--|| SIMULATION : produced_in
+    ROUTING_RESULT }o--o{ DEVICE : path_nodes
+
+    FAULT_EVENT }o--|| DEVICE : affects_node
+    FAULT_EVENT }o--|| LINK : affects_link
+    SIMULATION ||--o{ FAULT_EVENT : injects
+
+    CONFIGURATION ||--|| TOPOLOGY : loads
+    CONFIGURATION ||--|| SIMULATION : controls
+
+
+    DEVICE_TYPE {
+        string type_id
+        string type_name
+        string description
+    }
+
+    DEVICE {
+        string device_id
+        string ip_address
+        string status
+        string device_type
+    }
+
+    INTERFACE {
+        string interface_id
+        string mac_address
+        string status
+    }
+
+    LINK {
+        string link_id
+        string node_a
+        string node_b
+        boolean active
+    }
+
+    METRIC {
+        float delay
+        float bandwidth
+        float packet_loss
+    }
+
+    TOPOLOGY {
+        string topology_id
+        string topology_type
+        int node_count
+        int link_count
+    }
+
+    SIMULATION {
+        string simulation_id
+        float alpha_weight
+        float beta_weight
+        float gamma_weight
+        string algorithm_used
+    }
+
+    TRAFFIC_FLOW {
+        string traffic_id
+        string traffic_type
+        float load_rate
+    }
+
+    ROUTING_RESULT {
+        string route_id
+        float total_cost
+        float total_delay
+        int hop_count
+    }
+
+    FAULT_EVENT {
+        string fault_id
+        string fault_type
+        string timestamp
+    }
+
+    CONFIGURATION {
+        string config_id
+        string file_name
+        string format
+    }
+```
 ### Class Diagram
 
 ```mermaid
@@ -571,3 +673,4 @@ For questions, issues, or contributions:
 ---
 
 **NetTopoGen** - Empowering network education and research through interactive simulation.
+
